@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-based vehicle damage assessment using image processing and computer vision.">
+    <title>AIM002 | Vehicle Damage Assessment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="brand-mark">A</span>
+            <div>
+                <div class="brand-name">AIM002</div>
+                <div class="brand-subtitle">Vehicle Damage Assessment System</div>
+            </div>
+        </div>
+
+```
+    <div class="system-status">
+        <span class="status-dot"></span>
+        Image Analysis System
+    </div>
+</header>
+
+<main class="page">
+
+    <section class="hero-card">
+        <div class="hero-content">
+            <p class="eyebrow">COMPUTER VISION · IMAGE PROCESSING</p>
+
+            <h1>Vehicle Damage Assessment</h1>
+
+            <p class="hero-description">
+                Upload a vehicle photograph to analyze visible damage,
+                inspect detected regions, and estimate damage severity
+                using our image-processing pipeline.
+            </p>
+        </div>
+
+        <div class="upload-card" id="uploadCard">
+            <div class="upload-icon">↑</div>
+
+            <h3>Select a Vehicle Photograph</h3>
+
+            <p>Upload a clear image of the damaged vehicle.</p>
+
+            <p class="upload-help">
+                Supported formats: JPG, JPEG, PNG, BMP, WEBP · Maximum 25 MB
+            </p>
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/jpeg,image/png,image/bmp,image/webp"
+                hidden
+            >
+
+            <button type="button" class="select-button" id="selectImageButton">
+                Choose Image
+            </button>
+
+            <p class="selected-file" id="fileName" aria-live="polite">
+                No image selected
+            </p>
+
+            <img
+                id="selectedImagePreview"
+                alt="Preview of the selected vehicle"
+                style="display:none; max-width:100%; max-height:300px; margin-top:18px; object-fit:contain;"
+            >
+
+            <p class="upload-error hidden" id="uploadError" role="alert"></p>
+
+            <button
+                type="button"
+                class="analyze-button"
+                id="analyzeButton"
+                disabled
+            >
+                Analyze Image
+            </button>
+        </div>
+    </section>
+
+    <section class="results" id="aim002LiveResults" aria-live="polite">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">ASSESSMENT REPORT</p>
+                <h2>Vehicle Damage Analysis</h2>
+                <p class="section-description">
+                    Your assessment results will appear here after analysis.
+                </p>
+            </div>
+        </div>
+
+        <div class="loading-card" id="resultsPlaceholder">
+            <h3>Waiting for an image</h3>
+            <p>Select a vehicle photograph and click "Analyze Image" to begin.</p>
+        </div>
+    </section>
+
+    <section class="technical-section">
+        <div class="section-heading">
+            <div>
+                <p class="eyebrow">PROCESSING PIPELINE</p>
+                <h2>How the Assessment Works</h2>
+                <p class="section-description">
+                    The system processes the uploaded image through four stages.
+                </p>
+            </div>
+        </div>
+
+        <div class="technical-grid">
+            <div class="technical-item">
+                <span>Stage 01</span>
+                <strong>Image Preprocessing</strong>
+            </div>
+
+            <div class="technical-item">
+                <span>Stage 02</span>
+                <strong>Vehicle Segmentation</strong>
+            </div>
+
+            <div class="technical-item">
+                <span>Stage 03</span>
+                <strong>Damage Region Detection</strong>
+            </div>
+
+            <div class="technical-item">
+                <span>Stage 04</span>
+                <strong>Damage Assessment</strong>
+            </div>
+        </div>
+    </section>
+
+    <footer class="results-footer">
+        <p>AIM002 · Vehicle Damage Assessment System</p>
+        <p>This tool estimates visible damage and does not replace a professional vehicle inspection.</p>
+    </footer>
+
+</main>
+
+<script src="{{ url_for('static', filename='app.js') }}" defer></script>
+```
+
+</body>
+</html>

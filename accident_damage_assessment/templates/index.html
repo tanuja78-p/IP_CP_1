@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AutoInspect AI - vehicle damage assessment and image analysis.">
+  <title>AutoInspect AI | Vehicle Damage Assessment</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}?v=20261103">
+</head>
+<body>
+<div class="bg-orbs" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="brand-mark">AI</div>
+      <div class="brand-copy"><strong>AutoInspect AI</strong><span>Vehicle Damage Assessment</span></div>
+    </div>
+    <div class="system-indicator"><span class="system-dot"></span><span>AI Inspection System</span></div>
+  </div>
+</header>
+
+<main class="page-shell">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="hero-note"><span class="tape" aria-hidden="true"></span>Computer vision and image processing</p>
+      <h1>Vehicle damage,<br>region by region.</h1>
+      <p class="hero-text">Upload one photo. AutoInspect AI marks every suspicious region, rates how severe it is, tells you which area took the most damage and what to do about it.</p>
+      <div class="hero-pipeline" id="pipeline">
+        <div class="pipeline-step active" data-step="1"><span>01</span><strong>Upload</strong></div>
+        <div class="pipeline-line"></div>
+        <div class="pipeline-step" data-step="2"><span>02</span><strong>Analyze</strong></div>
+        <div class="pipeline-line"></div>
+        <div class="pipeline-step" data-step="3"><span>03</span><strong>Inspect</strong></div>
+        <div class="pipeline-line"></div>
+        <div class="pipeline-step" data-step="4"><span>04</span><strong>Assess</strong></div>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <svg class="blueprint" viewBox="0 0 520 300" fill="none">
+        <g class="bp-dim"><path d="M40 262H480M40 254v16M480 254v16"/><path d="M500 80V222M492 80h16M492 222h16"/></g>
+        <g class="bp-car">
+          <path d="M52 214v-34q0-14 16-20l66-18 56-52q8-8 20-8h118q14 0 24 10l50 48 56 12q18 5 18 24v38q0 8-8 8H60q-8 0-8-8z"/>
+          <path d="M146 150l42-40h92v40z"/><path d="M296 110h30l48 40h-78z"/>
+          <path d="M60 200h400" class="bp-faint"/>
+          <circle cx="146" cy="222" r="36"/><circle cx="146" cy="222" r="16"/>
+          <circle cx="368" cy="222" r="36"/><circle cx="368" cy="222" r="16"/>
+        </g>
+        <g class="bp-pin p1"><circle cx="92" cy="188" r="5"/><circle class="halo" cx="92" cy="188" r="5"/></g>
+        <g class="bp-pin p2"><circle cx="420" cy="176" r="5"/><circle class="halo" cx="420" cy="176" r="5"/></g>
+        <g class="bp-pin p3"><circle cx="268" cy="196" r="5"/><circle class="halo" cx="268" cy="196" r="5"/></g>
+      </svg>
+      <div class="scan-bar"></div>
+      <div class="readout r1"><b>Region 1</b><span>47.4% indicator</span></div>
+      <div class="readout r2"><b>Region 4</b><span>38.1% indicator</span></div>
+    </div>
+    <div class="hazard" aria-hidden="true"></div>
+  </section>
+
+  <!-- UPLOAD -->
+  <section class="upload-card" id="uploadSection">
+    <div class="section-heading">
+      <div><div class="section-kicker">STEP 01</div><h2>Upload Vehicle Image</h2><p>Choose a clear, well-lit photograph of the vehicle.</p></div>
+      <div class="upload-status">JPG | PNG | BMP | WEBP</div>
+    </div>
+
+    <input type="file" id="imageInput" accept="image/jpeg,image/png,image/bmp,image/webp" hidden>
+
+    <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="Choose or drop a vehicle image">
+      <div class="upload-icon" aria-hidden="true"><span class="upload-arrow"></span></div>
+      <h3>Drop vehicle image here</h3>
+      <p>or select an image from your computer</p>
+      <button type="button" class="primary-button" id="selectImageButton">Choose Vehicle Image</button>
+      <div class="selected-file" id="fileName">No image selected</div>
+      <img id="selectedImagePreview" class="upload-preview" alt="Selected vehicle preview">
+      <div class="file-details" id="fileDetails"></div>
+    </div>
+
+    <div class="upload-footer">
+      <div class="upload-limit">Maximum upload size: <strong>25 MB</strong><span id="uploadMessage">No image selected yet.</span></div>
+      <button type="button" class="analyze-button" id="analyzeButton" disabled>Analyze Vehicle</button>
+    </div>
+
+    <div class="analysis-progress" id="analysisProgress" hidden>
+      <div class="progress-top"><span id="progressText">Preparing image...</span><span class="spinner"></span></div>
+      <div class="progress-track"><span id="progressBar"></span></div>
+      <ol class="phase-list" id="phaseList"></ol>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="resultsSection" class="results-section" hidden>
+    <div class="results-header">
+      <div>
+        <div class="section-kicker">STEP 04</div>
+        <h2>Damage Assessment Report</h2>
+        <p>What the pipeline found on your photo, region by region.</p>
+      </div>
+      <span class="result-status" id="reportStatus">ANALYSIS COMPLETE</span>
+    </div>
+
+    <!-- verdict + narrative -->
+    <div class="verdict" id="verdictCard" data-tier="none">
+      <div class="verdict-icon" id="verdictIcon">!</div>
+      <div class="verdict-body">
+        <span class="verdict-label" id="verdictLabel">OVERALL</span>
+        <h3 id="verdictTitle">Report</h3>
+        <div class="narrative" id="narrative"></div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="results-grid">
+      <div class="result-stat"><span>OVERALL SEVERITY</span><strong id="resultSeverity">-</strong><small id="resultScore"></small></div>
+      <div class="result-stat"><span>DAMAGED AREA</span><strong id="resultDamage">-</strong><small>of the vehicle surface</small></div>
+      <div class="result-stat"><span>REGIONS ASSESSED</span><strong id="resultRegions">-</strong><small id="resultRegionsSub"></small></div>
+      <div class="result-stat accent"><span>MOST AFFECTED AREA</span><strong id="resultArea">-</strong><small id="resultAreaSub"></small></div>
+    </div>
+
+    <!-- image lab + zone map -->
+    <div class="lab">
+      <div class="panel lab-viewer">
+        <div class="lab-toolbar">
+          <div class="tabs" id="tabs" role="tablist">
+            <button class="tab active" data-tab="original" role="tab">Original</button>
+            <button class="tab" data-tab="vehicle" role="tab">Vehicle</button>
+            <button class="tab" data-tab="damage" role="tab">Damage mask</button>
+            <button class="tab" data-tab="enhanced" role="tab">Enhanced</button>
+          </div>
+          <div class="lab-tools">
+            <label class="switch"><input type="checkbox" id="markerToggle" checked><span></span>Region markers</label>
+            <button type="button" class="ghost-button" id="expandButton">Expand</button>
+          </div>
+        </div>
+        <div class="stage-wrap">
+          <div class="stage" id="stage">
+            <img id="stageImg" alt="Vehicle analysis view">
+            <div class="markers" id="markers"></div>
+          </div>
+          <div class="stage-empty" id="stageEmpty" hidden>This view is not available for this analysis.</div>
+        </div>
+        <p class="hint">Click a marker to open its details. Hover a region card to find it on the photo.</p>
+      </div>
+
+      <aside class="panel lab-zones">
+        <h3>Where the damage sits</h3>
+        <p class="muted">Position of regions in the photo (3 x 3 grid). Click a cell to filter the regions below.</p>
+        <div class="zone-grid" id="zoneGrid"></div>
+        <div class="zone-legend"><span class="lg high"></span>High <span class="lg moderate"></span>Moderate <span class="lg low"></span>Low</div>
+        <button type="button" class="ghost-button" id="zoneClear" hidden>Show all regions</button>
+      </aside>
+    </div>
+
+    <!-- region breakdown -->
+    <div class="panel">
+      <div class="panel-head">
+        <div><h3>Region breakdown</h3><p class="muted" id="regionSub"></p></div>
+        <div class="segmented" id="sortControl">
+          <button class="active" data-sort="priority">Priority</button>
+          <button data-sort="size">Size</button>
+          <button data-sort="position">Position</button>
+        </div>
+      </div>
+      <div class="region-list" id="regionList"></div>
+      <button type="button" class="ghost-button center" id="moreButton" hidden>Show more regions</button>
+    </div>
+
+    <!-- findings + actions -->
+    <div class="report-two">
+      <div class="panel">
+        <h3>Key findings</h3>
+        <ul class="findings" id="findings"></ul>
+      </div>
+      <div class="panel">
+        <span class="section-kicker">RECOMMENDED ACTION</span>
+        <h3>What should happen next?</h3>
+        <ol class="actions" id="actionList"></ol>
+      </div>
+    </div>
+
+    <div class="report-footer">
+      <p class="result-disclaimer">Preliminary image-based assessment only. Damage indicators are feature-based scores, not validated probabilities, and region positions are relative to the photo frame. Hidden or structural damage needs a professional physical inspection.</p>
+      <div class="footer-buttons">
+        <button type="button" class="ghost-button" id="copyButton">Copy summary</button>
+        <button type="button" class="ghost-button" id="printButton">Print / Save PDF</button>
+        <button type="button" class="primary-button" id="againButton">Analyze another image</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer"><div>AutoInspect AI | Vehicle Damage Assessment</div><div>Computer Vision | Image Processing | Analysis Pipeline</div></footer>
+
+<div class="lightbox" id="lightbox" hidden><button type="button" class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button><div class="lightbox-body" id="lightboxBody"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="{{ url_for('static', filename='app.js') }}?v=20261103" defer></script>
+</body>
+</html>

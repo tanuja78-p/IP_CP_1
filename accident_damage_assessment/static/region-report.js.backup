@@ -1,0 +1,40 @@
+(() => {
+  "use strict";
+  const root = document.getElementById("aim002-region-report");
+  if (!root) return;
+  const $ = selector => root.querySelector(selector);
+  const safe = value => String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+  const asNumber = value => { const n = Number(String(value ?? "").replace("%", "").trim()); return Number.isFinite(n) ? n : null; };
+  function render(payload) {
+    const p4 = payload?.p4 ?? payload?.result?.p4 ?? payload?.data?.p4 ?? {};
+    const severity = p4.severity ?? "Not available";
+    const damage = asNumber(p4.damage_percent);
+    const count = asNumber(p4.region_count ?? p4.regions?.length);
+    const score = asNumber(p4.severity_score);
+    $("[data-region-status]").textContent = "Analysis complete";
+    $("[data-most-affected]").textContent = damage === null ? "Not available" : `${damage.toFixed(2)}% estimated damage`;
+    $("[data-region-count]").textContent = count === null ? "Not available" : String(count);
+    $("[data-highest-level]").textContent = String(severity);
+    const list = p4.regions ?? p4.region_results ?? p4.regional_damage ?? p4.damage_regions ?? [];
+    const grid = $("[data-region-grid]");
+    if (Array.isArray(list) && list.length) {
+      grid.innerHTML = list.map((item, index) => {
+        const name = item.name ?? item.region ?? item.label ?? `Detected region ${index + 1}`;
+        const raw = asNumber(item.damage_percent ?? item.damage_percentage ?? item.percentage ?? item.score);
+        const value = raw === null ? null : Math.max(0, Math.min(100, raw <= 1 ? raw * 100 : raw));
+        const level = item.severity ?? item.level ?? "Requires review";
+        return `<article class="aim-region-card"><div class="aim-region-card-top"><h3>${safe(name)}</h3><span>${safe(level)}</span></div><p>${value === null ? "No region percentage was supplied." : `${value.toFixed(1)}% estimated region indicator`}</p></article>`;
+      }).join("");
+    } else {
+      grid.innerHTML = '<article class="aim-region-empty">The analysis has completed. The current P4 response does not provide named vehicle-part regions, so this report shows the overall assessment above rather than inventing part-level results.</article>';
+    }
+    const steps = [
+      "Review the detected damage image and compare it with the original photograph.",
+      "Check the affected areas in person; image analysis may miss hidden or structural damage.",
+      "Ask a qualified repair professional to confirm the severity and prepare an estimate."
+    ];
+    $("[data-next-steps]").innerHTML = steps.map(step => `<li>${safe(step)}</li>`).join("");
+  }
+  window.addEventListener("aim002:analysis-complete", event => render(event.detail || {}));
+  if (window.aim002AnalysisResult) render(window.aim002AnalysisResult);
+})();
